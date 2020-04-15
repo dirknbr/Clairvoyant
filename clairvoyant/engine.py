@@ -26,7 +26,22 @@ class Model:
         return prediction[0], prediction[1] # Negative, Positive
 
 class Engine:
-    def __init__(self, features, trainStr, trainEnd, testStr, testEnd, buyThreshold=0.65, sellThreshold=0.65, continueTraining=False):
+    def __init__(self, features, trainStr, trainEnd, testStr, testEnd, buyThreshold=0.65, 
+                 sellThreshold=0.65, continueTraining=False):
+        """
+        Args:
+          features: list of feature names
+          trainStr: training start index
+          trainEnd: training end index
+          testStr: test start index
+          testEnd: test end index
+          buyThreshold: buy threshold
+          sellThreshold: sell threshold
+          continueTraining: boolean, continue training in test set          
+        """
+        
+        assert testStr > trainEnd
+        
         self.model            = None
         self.account          = None
         self.features         = features
@@ -39,8 +54,14 @@ class Engine:
         self.continueTraining = continueTraining
 
     def start(self, data, capital=None, logic=None, simulation=False, **kwargs):
+        """
+        Args:
+          data: a pandas data.frame with open/close/date as columns, and features
+        """
         self.data = data
         self.model = Model(**kwargs)
+        
+        assert len(self.data) <= self.testEnd 
 
         # ====================== #
         #    Initial Training    #
